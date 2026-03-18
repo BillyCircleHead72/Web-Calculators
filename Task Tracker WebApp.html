@@ -6,7 +6,7 @@
 
             <style>
                 .title {
-                    position: fixed;
+                    margin-left: 200px;
                 }
                 html, body {
                     margin: 0;
@@ -21,6 +21,7 @@
                     background-size: cover;
                     background-position: center; 
                     background-repeat: no-repeat;
+                    background-attachment: fixed;
                     min-height: 100vh;
                     min-height: 100dvh;
                     overflow-x: hidden;
@@ -28,7 +29,7 @@
                 }
                 .content {
                     position: absolute;
-                    top: 5%;
+                    top: 15%;
                     left: 50%;
                     transform: translate(-50%, 35%);
                     text-align: center;
@@ -43,14 +44,16 @@
                 }
                 button {
                     margin-top: 5px;
+                    font-size: 20px;
                     font-family: cursive;
                     text-align: center;
                     background-color: #e8d3b5;
-                    border-color: #705532;
+                    border: 2.5px solid #705532;
                     outline: #705532;
                 }
                 input {
-                    font-size: 16px;
+                    margin-top: 5px;
+                    font-size: 20px;
                     font-family: cursive;
                     text-align: center;
                     background-color: #e8d3b5;
@@ -72,7 +75,7 @@
 
         <body>
             
-            <h1>~Task Tracker~</h1>
+            <h1 class="title">~Task Tracker~</h1>
             <h2 id="time">0:00</h2>
             <h2 id="timesUp" class="texts" style="display: none;">Time is Up!!<br>
                 <span style="font-size: 10px;">Please Reset the Timer..</span></h2>
