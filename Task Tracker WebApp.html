@@ -1,7 +1,7 @@
     <!DOCTYPE html>
     <html>
         <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Task Tracker WebApp</title>
 
             <style>
@@ -12,12 +12,14 @@
                     margin-left: 100px;
                 }
                 .time {
+                    position: absolute;
                     margin-top: 20px;
                     margin-left: 50px;
                     font-size: 40px;
                 }
                 .texts { 
-                    margin-top: -55px;
+                    position: absolute;
+                    margin-top: -67px;
                     margin-left: 190px;
                     font-size: 40;
                     position: fixed;
@@ -76,7 +78,7 @@
                     height: 20px;
                 }
                 li {
-                    margin-left: 45px;
+                    margin-left: 0px;
                     display: flex;
                     align-items: center;
                     gap : 10px;
@@ -103,6 +105,7 @@
             
             <h2 id="minus" class="texts" style="display: none;">Invalid Input<br>
                 <span style="font-size: 10px;">Please enter a valid number..</span></h2>
+                
             <div class="content">
             <input type="number" id="minutesInput" placeholder="Input Minutes Here :D">
             <button onclick="startTimer()">Start</button>
@@ -112,6 +115,7 @@
             <input type="text" id="taskInput" placeholder="Enter Task...">
             <button  onclick="addTask()">Add Task</button>
             </div>
+
             <ol id="taskList"></ol>
 
             <p class="credits"><span style="font-weight: 500;">by: Orang yang <span style="font-weight: 1000;">masih</span> menginginkanmu</span></p>
@@ -225,6 +229,7 @@
                         clearInterval(timer);
                         time = null;
                         document.getElementById("timesUp").style.display= "block";
+                        navigator.vibrate(500); 
                         return;
                     }
 
