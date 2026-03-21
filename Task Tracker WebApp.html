@@ -15,10 +15,9 @@
                     font-size: 40px;
                 }
                 .texts { 
-                    position: absolute;
-                    margin-top: -0px;
+                    margin-top: -20px;
                     margin-left: 190px;
-                    font-size: 40;
+                    font-size: 40px;
                     position: fixed;
                     line-height: 0.75;
                     text-align: center;
@@ -64,6 +63,9 @@
                     border: 2.5px solid #705532;
                     outline: #705532;
                 }
+                .smallbox {
+                    width: 135px;
+                }
                 input[type="checkbox"] {
                     accent-color: #e0a048;
                     width: 20px;
@@ -103,7 +105,7 @@
                 <span style="font-size: 10px;">Please enter a valid number..</span></h2>
                 
             <div class="content">
-            <input type="number" id="minutesInput" placeholder="Input Minutes Here :D">
+            <input class="smallbox" type="number" id="minutesInput" placeholder="Minutes Here :)">
             <button onclick="startTimer()">Start</button>
             <button onclick="pauseTimer()">Pause</button>
             <button onclick="resetTimer()">Reset</button>
@@ -114,8 +116,8 @@
 
             <ol id="taskList"></ol>
 
-            <p class="credits"><span style="font-weight: 500;">by: Orang yang <span style="font-weight: 1000;">masih</span><br> menginginkanmu</span></p>
-
+            <!--<p class="credits"><span style="font-weight: 500;">by: Orang yang <span style="font-weight: 1000;">masih</span><br> menginginkanmu</span></p>-->
+            <p class="credits">by: Nugraha AY</p>
 
 
         </body>
@@ -123,7 +125,23 @@
         <script>
             const max_tasks = 10
             let tasks = [];
-            //Tasks code
+            //save tasks
+            function saveTasks() {
+                sessionStorage.setItem("tasks", JSON.stringify(tasks));
+            }
+
+            //load tasks
+            function loadTasks() {
+                let savedTasks = sessionStorage.getItem("tasks");
+                if (savedTasks) {
+                    tasks = JSON.parse(savedTasks);
+                    displayTasks();
+                }
+            }
+
+//Tasks code
+
+            //Add tasks
             function addTask() {
                 let agenda = document.getElementById("taskInput").value;
 
@@ -141,6 +159,7 @@
 
                 document.getElementById("taskInput").value = "";
 
+                saveTasks();
                 displayTasks();
             }
 
@@ -158,6 +177,7 @@
                     checkbox.checked = tasks[i].done;
                     checkbox.onclick = function () {
                         tasks[i].done = !tasks[i].done;
+                        saveTasks();
                         displayTasks();
                     };
 
@@ -170,6 +190,7 @@
                     deleteButton.textContent = "Delete";
                     deleteButton.onclick = function () {
                         tasks.splice(i,1); //remove task from array
+                        saveTasks();
                         displayTasks();
                     };
                     if (tasks[i].done) {
@@ -185,13 +206,14 @@
             
 
 
-            //Timer code
-            let time = 0;
+//Timer code
+            let endTime = null;
             let timer = null;
+            let minutes;
 
-            function timerDisplay() {
-                let minutes = Math.floor(time / 60);
-                let seconds = time % 60;
+            function timerDisplay(t) {
+                let minutes = Math.floor(t / 60);
+                let seconds = t % 60;
 
                 if (seconds < 10) {
                     seconds = "0" + seconds;
@@ -201,57 +223,84 @@
             }
 
             function startTimer() {
+                
                 if (timer !== null) {
                     return;
                 }
-                
-                if (time == 0) {
-                    let minutes = document.getElementById("minutesInput").value;
-                    if (minutes < 0) {
+                let savedRemaining = sessionStorage.getItem("remainingTime");
+
+                if (savedRemaining) {
+                    let remaining = parseInt(savedRemaining);
+
+                    if (!isNaN(remaining)) {
+                        endTime = Date.now() + remaining;
+                    }
+
+                    sessionStorage.removeItem("remainingTime");
+                }
+                if (!endTime) {
+                    minutes = parseInt(document.getElementById("minutesInput").value);
+                    if (minutes <= 0 || isNaN(minutes)) {
                         document.getElementById("minus").style.display= "block";
                         return;
                     } else {
                         document.getElementById("minus").style.display= "none";
-                        time = minutes * 60;
                     }
+                    endTime = Date.now() + (minutes * 60 * 1000);
                 }
-                
+                let now = Date.now();
+                let remaining = Math.max(0, Math.ceil((endTime - now) / 1000) - 1);
+                timerDisplay(remaining);
 
-                timerDisplay();
+                timer = setInterval(function () {
 
-                timer = setInterval(function timer(){
-                    
-                    if (time <= 0) {
-                        clearInterval(timer);
-                        time = null;
-                        document.getElementById("timesUp").style.display= "block";
-                        navigator.vibrate(500); 
-                        return;
+                    let now = Date.now();
+                    let remaining = Math.max(0, Math.ceil((endTime - now) / 1000) - 1);
+
+                    if (remaining <= 0) {
+                    clearInterval(timer);
+                    timer = null;
+                    endTime = null;
+
+                    document.getElementById("timesUp").style.display = "block";
+                    navigator.vibrate(250);
+
+                    timerDisplay(0);
+                    return;
                     }
 
-                    time--;
-                    timerDisplay();
-                }, 1000);
+                    timerDisplay(remaining);
+
+                    }, 1000);
+                    
             }
 
             function pauseTimer() {
                 clearInterval(timer);
                 timer = null;
+                
+                if (endTime) {
+                    let now = Date.now();
+                    let remaining = endTime - now;
+
+                    if (!isNaN(remaining)) {
+                        sessionStorage.setItem("remainingTime", remaining);
+                    }
+                }
             }
 
             function resetTimer() {
                 clearInterval(timer);
                 timer = null;
-                time = 0;
+                endTime = null;
                 document.getElementById("timesUp").style.display= "none"
                 document.getElementById("minus").style.display= "none";
-                timerDisplay();
+                sessionStorage.removeItem("remainingTime");
+                timerDisplay(0);
             }
 
-            timerDisplay();
-
-
-
+            loadTasks();
+            timerDisplay(0);
         </script>
 
     </html>
